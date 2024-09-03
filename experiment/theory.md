@@ -103,7 +103,7 @@ Table-1. Switch states for full bridge Inverter-Unipolar switching
 <div style="float: left; width:100%;"><br>
 <center>
 
-  **MULTIPLE-PULSE WIDTH MODULATION (SPWM)**     
+  **MULTIPLE-PULSE WIDTH MODULATION**     
 </center>
 </div>
 
@@ -194,7 +194,7 @@ where T<sub>s</sub>=T/2p.
 **SINUSOIDAL-PULSE WIDTH MODULATION (SPWM)**
 <br>
 
-- For realizing SPWM, a high-frequency triangular carrier wave is compared with a sinusoidal reference of the desired output frequency. 
+- For realizing SPWM, a high-frequency triangular carrier wave is compared with a sinusoidal reference of the desired output frequency. (Unipolar PWM) 
 - The intersection of carrier and reference waveforms determines the switching instants of the devices. 
 - The PWM scheme is illustrated in Fig. 4 in which ‘v<sub>c</sub>’ is the peak value of triangular carrier wave and ‘v<sub>r</sub>’ that of the reference signal. 
 - The switches of the inverter are controlled based on the PWM generated above. 
