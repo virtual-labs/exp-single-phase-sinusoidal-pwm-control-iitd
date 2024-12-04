@@ -262,6 +262,11 @@ function toggleNextBtn(){
   let nextBtn = document.querySelector(".btn-next")
   nextBtn.classList.toggle("btn-deactive")
 }
+const cancelSpeech = ()=>{
+  window.speechSynthesis.cancel()
+  ccQueue = []
+}
+
 const setIsProcessRunning = (value) => {
   // calling toggle the next
   if(value != isRunning){
@@ -270,6 +275,7 @@ const setIsProcessRunning = (value) => {
 
   isRunning = value;
   if(value){
+    cancelSpeech()
     Dom.hideAll()
   }
 };
@@ -315,13 +321,16 @@ let student_name = "";
 const 
 
 
-textToSpeach = (text) => {
-  // if(isMute){
-  //   return;
-  // }
+textToSpeach = (text,speak=true) => {
+  // for filter <sub></sub>
+  text = text.replaceAll("<sub>"," ").replaceAll("</sub>"," ")
   let utterance = new SpeechSynthesisUtterance();
   utterance.text = text;
   utterance.voice = window.speechSynthesis.getVoices()[0];
+  if(isMute || !speak){
+    utterance.volume = 0
+    utterance.rate = 10
+  }
   window.speechSynthesis.speak(utterance);
   return utterance;
 };
@@ -330,7 +339,7 @@ textToSpeach = (text) => {
 let ccQueue = [];
 // for subtitile
 let ccObj = null;
-function setCC(text = null, speed = 25) {
+function setCC(text = null, speed = 25, speak = true) {
   if (ccObj != null) {
     ccObj.destroy();
   }
@@ -341,14 +350,14 @@ function setCC(text = null, speed = 25) {
     strings: ["", ...ccQueue],
     typeSpeed: speed,
     onStringTyped(){
-      ccQueue.shift();
+      ccQueue.shift()
       // if(ccQueue.length != 0){
-      //   setCC(ccQueue.shift())
+      //   setCC(ccQueue.shift())`
       // }
     }
   });
-  if (!isMute) textToSpeach(text);
-  return ccDom;
+  let utterance = textToSpeach(text,speak)
+  return utterance
 }
    
 // * for cursor pointer
@@ -603,13 +612,19 @@ symbol_R : new Dom("symbol_R"),
 
 part_2_graph_data_upper: new Dom("part_2_graph_data_upper"),
 
+btn_hint: new Dom("btn_hint"),
+hint_box: new Dom("hint_box"),
+
 concept_development : new Dom(".concept_development"),
 
 // EE3 dom items added
 
 part1_box1 : new Dom(".part1_box1"),
 
-
+hw_result_1_1 : new Dom("hw_result_1_1"),
+hw_result_1_2 : new Dom("hw_result_1_2"),
+hw_result_menu : new Dom("hw_result_menu"),
+mask : new Dom("mask"),
 
 
      
@@ -896,6 +911,18 @@ part1_box1 : new Dom(".part1_box1"),
 
       Scenes.items.btn_check.set(865-80, -40, 45).zIndex(1)
       Scenes.items.btn_reset.set(865, -40, 45).zIndex(1)
+
+      //! hint button code
+      Scenes.items.btn_hint.set(696, -39, 45).zIndex(20001)
+      Scenes.items.hint_box.set(78, -17, 322).zIndex(20001).hide()
+
+     let hint_btn = Scenes.items.btn_hint;
+      hint_btn.item.onmouseenter = ()=>{
+        Scenes.items.hint_box.show()
+      }
+      hint_btn.item.onmouseout = ()=>{
+        Scenes.items.hint_box.hide()
+      }
 
       let us = {
         color: "#993366",
@@ -1689,16 +1716,15 @@ part1_box1 : new Dom(".part1_box1"),
       return true
     }),
   
-    (step3 = function () {
+    (step2 = function () {
       setIsProcessRunning(true);
-      Scenes.items.btn_next.show()
       
       // todo all previous elements hide
       Dom.hideAll();
+      Scenes.items.btn_next.show()
       Scenes.items.contentAdderBox.item.innerHTML = ""
 
       Scenes.setStepHeading("Step-3", "Performance Analysis.");
-      setCC("Click on the 'ICON' to plot the performance characteristics.")
       
       // * remove all previous restrictions
       
@@ -1810,16 +1836,19 @@ part1_box1 : new Dom(".part1_box1"),
       }      
 
       if(exit){
-        // after complete
-        // Dom.setBlinkArrow(true, 790, 408).play();
-        setCC("Simulation Done");
+        setCC("Click 'Next' to go to next step");
+        Dom.setBlinkArrow(true, 790, 410).play();
         setIsProcessRunning(false);
+        Scenes.currentStep = 6
+      }else{
+        setCC("Click on the 'ICON' to plot the performance characteristics.")
+
       }
 
       return true;
 
     }),
-    (step4 = function () {
+    (step3 = function () {
       setIsProcessRunning(true);
  
       Scenes.setStepHeading(
@@ -2431,7 +2460,7 @@ part1_box1 : new Dom(".part1_box1"),
       
       return true
     }),
-    (step5 = function () {
+    (step4 = function () {
       setIsProcessRunning(true);
  
       Scenes.setStepHeading(
@@ -3044,7 +3073,7 @@ part1_box1 : new Dom(".part1_box1"),
       
       return true
     }),
-    (step6 = function () {
+    (step5 = function () {
       setIsProcessRunning(true);
       
       Scenes.setStepHeading(
@@ -3421,1151 +3450,116 @@ part1_box1 : new Dom(".part1_box1"),
       
       return true
     }),
-    // (step5 = function () {
-    //   setIsProcessRunning(true);
-    //   Dom.hideAll()
-    //   Scenes.setStepHeading(
-    //     "",
-    //     ""
-    //   );
-    //   Scenes.changeHeader(2)
-    //   // setCC("Record 7 reading for 3 different load resistances.")
-    //   // ! show the slider
-    //   Scenes.items.slider_box.set(-50,-80).scale(0.79)
-    //   Scenes.items.btn_next.show()
-
-    //   //! Required Items
-    //   Scenes.items.new_part_3_circuit.set(220,-20,190)
-    //   // Scenes.items.circuit_full_3.set(230,-50,150)
-    //   // Scenes.items.part_3_option_3.set(-30, 155)
-    //   //  Scenes.items.right_tick_1.set(-5,175)
-    //   Scenes.items.btn_record.set(640,-78)
-    //   Scenes.items.btn_delete.set(740,-78)
-    //    Scenes.items.btn_reset.set(840,-78)
-    //   // Scenes.items.part3_table_three.set(20)
-    //   Scenes.items.part3_table_two.set(-43,160, null).scale(0.9)
-
-    //    let table = Scenes.items.part3_table_two.item
-    //    let tableColumnMax = table.tBodies[0].rows[0].cells.length
-    //    let tableRowMax = table.tBodies[0].rows.length
-
-    //    let valuesToMatch = []
-    //     // * index to handle records
-    //   let recordBtnClickIdx = (table.tBodies[0].rows[6].cells[4].innerHTML==""?0:7)
-      
-    //   // ! graph
-    //   let graph_height = 200
-    //   let graph_width = 355
-      
-    //   Scenes.items.graph_box_3.set(null, -28, 210)
-    //   Scenes.items.graph3.set(null,null,graph_height,graph_width)
-    //   let ctx = Scenes.items.graph3.item
-
-    //   Scenes.items.graph_box_4.set(null, 190, 220)
-    //   Scenes.items.graph4.set(null,null,graph_height,graph_width)
-    //   let ctx2 = Scenes.items.graph4.item
-
-    //   // ! Label for graph
-    //   let xLabel = Scenes.items.chart.label3.x
-    //   let yLabel = Scenes.items.chart.label3.y
-    //   let dataLabel = "Data"
-
-    //   let xLabel2 = Scenes.items.chart.label4.x
-    //   let yLabel2 = Scenes.items.chart.label4.y
-    //   let dataLabel2 = "Data2"
-
-    //   // ! Forshowing graph labels
-    //   // graph idx is for  showing which graph is being shown
-    //   let graphIdx = 2
-    //   if(Scenes.items.chart[graphIdx] != null){
-    //     Scenes.items.xLabel.set().setContent(xLabel)
-    //     Scenes.items.yLabel.set().setContent(yLabel)
-
-    //     Scenes.items.xLabel2.set().setContent(xLabel2)
-    //     Scenes.items.yLabel2.set().setContent(yLabel2)
-    //   }
-      
-    //   // ! To Plot graph
-    //   function plotGraph(
-    //     ctx,
-    //     ctx2,
-    //     graphIdx,
-    //     data,
-    //     data2,
-    //     dataLabel,
-    //     dataLabel2,
-    //     xLabel=null,
-    //     yLabel=null,
-    //     xLabel2=null,
-    //     yLabel2=null,
-    //     beginAtZero=false
-    //   ){
-    //     // for label
-    //     let yStyle = {
-    //       backgroundColor: "transperant",
-    //       textAlign: "center",
-    //       color: "black",
-    //       width: "170px", 
-    //       rotate: "-90deg",
-    //     }
-    //     let xStyle = {
-    //       backgroundColor: "transperant",
-    //       color: "black",          
-    //       width: "fit-content",
-    //     }
-    //     Scenes.items.yLabel.set(487,80).setContent(yLabel).styles(yStyle)
-    //     Scenes.items.xLabel.set(700,160).setContent(xLabel).styles(xStyle)        // for label2
-    //     Scenes.items.yLabel2.set(487,80+225).setContent(yLabel2).styles(yStyle)
-    //     Scenes.items.xLabel2.set(700,160+225).setContent(xLabel2).styles(xStyle)
-
-    //     // ! Destroy old graph
-    //     let graphRef = Scenes.items.chart[graphIdx]
-    //     let graphRef2 = Scenes.items.chart[graphIdx+1]
-    //     if(graphRef!=null){
-    //       graphRef.destroy()
-    //       graphRef2.destroy()
-    //     }
-        
-    //     graphRef = new Chart(ctx, {
-    //       type: "scatter",
-    //       plugins: [{
-    //         // afterDraw: chart => {
-    //         //   var ctx = chart.chart.ctx;
-    //         //   ctx.save();
-    //         //   ctx.textAlign = 'center';
-    //         //   ctx.font = '18px Arial';
-    //         //   ctx.fillStyle = 'black';
-    //         //   ctx.fillText('Output Power (P )', chart.chart.width / 2, chart.chart.height - 24);
-    //         //   ctx.textAlign = 'left';
-    //         //   ctx.font = '10px Arial';
-    //         //   ctx.fillText('0', chart.chart.width - 119, chart.chart.height - 12);
-    //         //   ctx.restore();
-    //         // },
-            
-    //       }],
-    //       data: {
-    //         datasets: [
-    //             {
-    //               label: dataLabel,
-    //               fill: false,
-    //               borderColor: "red",
-    //               backgroundColor: "red",
-    //               data: data,
-    //               display: false,
-    //             },
-    //         ],
-    //       },
-    //       options: {
-    //         scales: {
-    //           yAxes: [
-    //             {
-    //               scaleLabel: {
-    //                 display: false,
-    //                 labelString: yLabel,
-    //                 fontColor: 'black',
-    //                 fontSize: 17,
-  
-    //               },
-    //               ticks: { 
-    //                 beginAtZero:beginAtZero,
-    //                 fontColor: 'black',
-    //                 fontSize: 14,
-    //               }
-    //             },
-    //           ],
-    //           xAxes: [
-    //             {
-    //               scaleLabel: {
-    //                 display: false,
-    //                 labelString: xLabel,
-    //                 fontColor: 'black',
-    //                 fontSize: 17,
-    //               },
-    //               ticks: { 
-    //                 beginAtZero:beginAtZero,
-    //                 fontColor: 'black',
-    //                 fontSize: 14,
-    //               }
-    //             },
-    //           ],
-    //         },
-    //       },
-    //     })
-    //     graphRef2 = new Chart(ctx2, {
-    //       type: "scatter",
-    //       plugins: [{
-    //         // afterDraw: chart => {
-    //         //   var ctx = chart.chart.ctx;
-    //         //   ctx.save();
-    //         //   ctx.textAlign = 'center';
-    //         //   ctx.font = '18px Arial';
-    //         //   ctx.fillStyle = 'black';
-    //         //   ctx.fillText('Output Power (P )', chart.chart.width / 2, chart.chart.height - 24);
-    //         //   ctx.textAlign = 'left';
-    //         //   ctx.font = '10px Arial';
-    //         //   ctx.fillText('0', chart.chart.width - 119, chart.chart.height - 12);
-    //         //   ctx.restore();
-    //         // },
-            
-    //       }],
-    //       data: {
-    //         datasets: [
-    //             {
-    //               label: dataLabel2,
-    //               fill: false,
-    //               borderColor: "red",
-    //               backgroundColor: "red",
-    //               data: data2,
-    //               display: false,
-    //             },
-    //         ],
-    //       },
-    //       options: {
-    //         scales: {
-    //           yAxes: [
-    //             {
-    //               scaleLabel: {
-    //                 display: false,
-    //                 labelString: yLabel2,
-    //                 fontColor: 'black',
-    //                 fontSize: 17,
-  
-    //               },
-    //               ticks: { 
-    //                 beginAtZero:beginAtZero,
-    //                 fontColor: 'black',
-    //                 fontSize: 14,
-    //               }
-    //             },
-    //           ],
-    //           xAxes: [
-    //             {
-    //               scaleLabel: {
-    //                 display: false,
-    //                 labelString: xLabel2,
-    //                 fontColor: 'black',
-    //                 fontSize: 17,
-    //               },
-    //               ticks: { 
-    //                 beginAtZero:beginAtZero,
-    //                 fontColor: 'black',
-    //                 fontSize: 14,
-    //               }
-    //             },
-    //           ],
-    //         },
-    //       },
-    //     })
-     
-    //     Scenes.items.chart[graphIdx] = graphRef
-    //     Scenes.items.chart[graphIdx+1] = graphRef2
-    //   }
-
-    //   // for adding new datasets to graph
-    //   const graph = {
-    //     addDataset(chart,label,bgColor,data){
-    //       chart.data.datasets.push(
-    //         {
-    //           label: label,
-    //           fill: false,
-    //           borderColor: bgColor,
-    //           backgroundColor: bgColor,
-    //           data: data,
-    //         }
-    //       )
-    //       chart.update()
-    //     },
-    //     addData(chart,index,data){
-    //       console.log(data)
-    //       if(data.length > 0){
-    //         chart.data.datasets[index].data = data
-    //       }else{
-    //         chart.data.datasets[index].data.push(data)
-    //       }
-    //       chart.update()
-    //     }
-    //   }
-
-
-    //   // let slidersBox = document.querySelectorAll(".slider")
-    //   // let slidersBox = document.querySelectorAll(".range-slider__range")
-    //   let topMinus = 85
-    //   let leftMinus = 50
-    //   function stepTutorial2(){
-
-    //     Dom.setBlinkArrowRed(true,100-leftMinus,78-topMinus,30,30,90).play()
-    //     setCC("Select V<sub>in</sub>")
-        
-    //     sliders.selectOp1.oninput = ()=>{
-    //       Dom.setBlinkArrowRed(true,240-leftMinus,78-topMinus,30,30,90).play()
-    //       setCC("Select R")
-    //     }
-    //     sliders.selectOp2.oninput = ()=>{
-    //       Dom.setBlinkArrowRed(true,380-leftMinus,78-topMinus,30,30,90).play()
-    //       setCC("Select Turns ratio")
-    //       }
-    //         sliders.selectOp3.oninput = ()=>{
-    //           Dom.setBlinkArrowRed(true,130-leftMinus,125-topMinus,30,30,90).play()
-    //           setCC("Select D")
-    //         }
-    //           sliders.slider.onclick = ()=>{
-    //             Dom.setBlinkArrowRed(true,730-leftMinus,60-topMinus,30,30,90).play()
-    //             setCC("Press Record")                
-    //           }
-    //   }
-    //   if(recordBtnClickIdx == 0){
-    //     stepTutorial2()
-    //   }
-    //   // generate option
-    //   sliders.generateOptionsFor(1)
-      
-    //   function setDataToGraph(){
-
-    //     let characteristicsValue = Scenes.items.slider_C.item.value;
-       
-    //     let graphData = []
-    //     let graphData2 = []
-    //     var rows = table.tBodies[0].rows
-    //     let n = rows.length
-    //     ,xLabel = "Duty Ratio (D)"
-    //     ,yLabel = "Voltage Gain (M)"
-    //     ,xLabel2 = "Duty Ratio (D)"
-    //     ,yLabel2 = "Output voltage (V<sub>0</sub>)",
-    //     tableModulationIdx = 3,
-    //     tableV0Idx = 4,
-    //     table = 7
-    //     for(let i=0;i<n;i++){
-    //       let x = rows[i].cells[tableModulationIdx].innerHTML
-    //       let y = rows[i].cells[tableV0Idx].innerHTML
-
-    //       let x2 = rows[i].cells[tableModulationIdx].innerHTML
-    //       let y2 = rows[i].cells[tableV0Idx].innerHTML
-
-    //       graphData.push({x: x,y: y})
-    //       graphData2.push({x: x2,y: y2})
-    //     }
-    //     // ! setDefault two values in it
-    //     function setDefaultLowHighInGraph(graphNumber){
-    //       // D value
-    //       let low = 0, high = 0.95,x = 0,y = 0
-    //       updateValues(sliders.selectOp1.value,low,sliders.selectOp2.value)
-    //       x = low
-    //       if(graphNumber == 1){
-    //         y = Number(Formulas.nonIdeal.M(values)).toFixed(2)
-    //         graphData.unshift({x: x, y: y})
-    //       }else{
-    //         y = Number(Formulas.nonIdeal.v0(values)).toFixed(2)
-    //         graphData2.unshift({x: x, y: y})
-    //       }
-
-    //       updateValues(sliders.selectOp1.value,high,sliders.selectOp2.value)
-    //       x = high
-    //       if(graphNumber == 1){
-    //         y = Number(Formulas.nonIdeal.M(values)).toFixed(2)
-    //         graphData.push({x: x, y: y})
-    //       }else{
-    //         y = Number(Formulas.nonIdeal.v0(values)).toFixed(2)
-    //         graphData2.push({x: x, y: y})
-    //       }
-    //     }
-    //     setDefaultLowHighInGraph(1)
-    //     setDefaultLowHighInGraph(2)
-
-    //       // for loop fix
-    //       let conclusionFront = ""
-
-    //       conclusionFront = "Voltage gain and output voltage increases with increasing duty ratio upto certain duty ratio and then starts decreasing. Depending on turns ratio and duty cycle, output voltage is either lower or higher than input voltage."
-
-    //       setCC("Voltage gain and output voltage increases with increasing duty ratio upto certain duty ratio and then starts decreasing. Depending on turns ratio and duty cycle, output voltage is either less or greater than input voltage.",3)
-          
-
-    //       // switch(characteristicsValue){
-
-    //       //   case  'D-vs-M': 
-    //       //     yLabel = "M (D)"
-    //       //     dataLabel1 = "M(D) non-ideal"
-    //       //     dataLabel2 = "M(D) ideal"
-    //       //     conclusionFront = "Voltage gain depends on the load resistance and  non-ideal voltage gain is lesser than ideal voltage gain due to voltage drops in various components."
-    //       //     setCC("The conclusion of these observation is that Voltage gain depends on the load resistance and  non-ideal voltage gain is lesser than ideal voltage gain due to voltage drops in various components.",3)
-    //       //     break
-
-    //       //   case  'D-vs-I': 
-    //       //     yLabel = "I<sub>0</sub> (A)"
-    //       //     dataLabel1 = "I₀ (A) non-ideal"
-    //       //     dataLabel2 = "I₀ (A) ideal"
-    //       //     conclusionFront = "The load current linearly increases with increasing duty ratio."
-    //       //     setCC("The conclusion of these observation is that the load current linearly increases with increasing duty ratio.",3)
-    //       //     break
-
-    //       //   case  'D-vs-V': 
-    //       //     yLabel = "V<sub>0</sub> (V)"
-    //       //     dataLabel1 = "V₀ (V) non-ideal"
-    //       //     dataLabel2 = "V₀ (V) ideal"
-    //       //     conclusionFront = "Load voltage depends on the load resistance and  non-ideal load voltage is lesser than ideal load voltage due to voltage drops in various components."
-    //       //     setCC("The conclusion of these observation is that load voltage depends on the load resistance and  non-ideal load voltage is lesser than ideal load voltage due to voltage drops in various components.",3)
-    //       //     break
-    //       // }
-
-    //       // ! For front conclusion
-    //       // Anime.fade(
-    //         //   Scenes.items.tempTitle1.set().setContent(conclusionFront).addClass("conclusion").item,1,13
-    //         //   )
-            
-    //       Scenes.items.tempTitle1.set().setContent(conclusionFront).addClass("conclusion").item
-
-    //       Scenes.items.chart.label3.x = xLabel
-    //       Scenes.items.chart.label3.y = yLabel
-
-    //       Scenes.items.chart.label4.x = xLabel2
-    //       Scenes.items.chart.label4.y = yLabel2
-
-    //       plotGraph(ctx,ctx2,graphIdx,graphData,graphData2,dataLabel,dataLabel2,xLabel,yLabel,xLabel2,yLabel2,true)
-    //       Scenes.items.graph3.set(null,null,graph_height,graph_width)
-    //       Scenes.items.graph4.set(null,null,graph_height,graph_width)
-
-    //   }
-    //   // ! ------------> If data already present plot the graph
-    //   if(table.tBodies[0].rows[6].cells[2].innerHTML !== ""){
-    //     setIsProcessRunning(false)
-    //     Scenes.currentStep = 4
-
-    //     // ! change the table column index who's changing
-    //     let changeableColumnIndx = 3
-
-    //     recordBtnClickIdx = 8
-    //     let rows = table.tBodies[0].rows
-      
-    //     // * to get old values from table for matching
-    //     for(let i=0;i<tableColumnMax;i++){
-    //       let val = rows[i].cells[changeableColumnIndx].innerHTML
-    //       valuesToMatch.push(Number(val))
-    //     }
-    //   }else{
-    //     // ! Please note this when plot the graph then show the graph ... 
-    //     plotGraph(ctx,ctx2,graphIdx,[{}],[{}],dataLabel,dataLabel2,xLabel,yLabel,xLabel2,yLabel2,true) 
-    //     Scenes.items.graph3.set(null,null,graph_height,graph_width)
-    //     Scenes.items.graph4.set(null,null,graph_height,graph_width)
-    //     // disableSlider("reset")
-    //   }
-
-    //   // // ! adding data set
-    //   // graph.addDataset(
-    //   //   "Efficiency",
-    //   //   "red",
-    //   //   []
-    //   // )
-       
-
-    //    //!onclick for delete btn
-    //    Scenes.items.btn_delete.item.onclick =  function(){
-    //     if(recordBtnClickIdx == 0 || recordBtnClickIdx > tableRowMax){
-    //       return
-    //     }
-    //     let row = table.tBodies[0].rows
-        
-    //     for(let i=1;i<tableColumnMax;i++){
-    //       row[recordBtnClickIdx-1].cells[i].innerHTML = "" ;
-    //     }
-    //     recordBtnClickIdx = recordBtnClickIdx-1
-    //     if(recordBtnClickIdx==0){
-    //       sliders.enableAll()
-    //       stepTutorial2()
-    //     }
-    //     valuesToMatch.pop()
-    //   }
-
-    //   //! onclick for reset 
-    //   Scenes.items.btn_reset.item.onclick = function(){
-    //     var rows = table.tBodies[0].rows
-  
-    //     for(let i=0;i<tableRowMax;i++){
-    //       for(let j=1;j<tableColumnMax;j++){
-    //         rows[i].cells[j].innerHTML = "";
-    //       }
-    //     }
-
-    //     for(let i=0;i<tableRowMax;i++){
-    //       rows[i].cells[0].innerHTML = i+1;
-    //     }
-
-    //     // reset all the parameters
-    //     // so just simply call this step again
-    //     Scenes.steps[6]()        
-        
-    //   }
-
-    //   // ! onclick for record
-    //   Scenes.items.btn_record.item.onclick = function(){ 
-
-    //     // taking values from all sliders 
-    //     let vInValue = Number(sliders.selectOp1.value)
-    //     let dutyRatioValue = Number(sliders.slider.value)
-    //     let resistanceValue = Number(sliders.selectOp2.value)
-
-
-
-    //     // * if all values not selected
-    //     if(vInValue=="" || dutyRatioValue=="" || resistanceValue==""){
-    //       setCC("Select all values first.")
-    //       return
-    //     }
-
-    //     updateValues(vInValue,dutyRatioValue,resistanceValue)
-    //     console.log(vInValue,dutyRatioValue,resistanceValue)
-        
-    //     // ! for arrow system
-    //     if(recordBtnClickIdx < tableRowMax-1){
-    //       Dom.setBlinkArrowRed(true,130-leftMinus,125-topMinus,30,30,90).play()
-    //       setCC("Select D")
-    //     }
-    //     else{
-    //       Dom.setBlinkArrowRed(-1)
-    //     }
-
-    //     // ! Can't select same values
-    //     if(recordBtnClickIdx < 8 && valuesToMatch.indexOf(dutyRatioValue)!=-1){
-    //       setCC("Please select different value.")
-    //       return
-    //     }else{
-    //       valuesToMatch.push(dutyRatioValue)
-    //     }
-
-    //     // ! sort the data
-    //     if(recordBtnClickIdx>=8){
-
-    //       function sortTable(){
-    //         var rows = table.tBodies[0].rows
-
-    //         let n=8
-    //         let sortIndex = 3
-    //         for(let i=0;i<n;i++){
-    //             for(let j=0;j<n-i-1;j++){
-    //                 let val1 = Number(rows[j].cells[sortIndex].innerHTML)
-    //                 let val2 = Number(rows[j+1].cells[sortIndex].innerHTML)
-    //                 if(val1 > val2){
-    //                     let temp = rows[j].innerHTML
-    //                     rows[j].innerHTML = rows[j+1].innerHTML
-    //                     rows[j+1].innerHTML = temp
-    //                 }
-    //             }
-    //         }
-    //         for(let i=0;i<n;i++){
-    //             rows[i].cells[0].innerHTML = i+1
-    //         }
-    //       }
-    //       sortTable()
-
-    //       // * plot the graph
-    //       // adding parameter to x,y graph
-    //       // var rows = table.tBodies[0].rows
-    //       // let n = 7
-    //       // for(let i=0;i<n;i++){
-    //       //   graph.addData(0,
-    //       //     {
-    //       //       x: rows[i].cells[9].innerHTML,
-    //       //       y: rows[i].cells[10].innerHTML
-    //       //     }
-    //       //   )
-    //       // }
-    //       setDataToGraph()
-
-    //       // after complete
-    //       Dom.setBlinkArrow(true, 790, 408).play()
-    //       setCC("Click 'Next' to go to next step")
-    //       setIsProcessRunning(false)
-    //       Scenes.currentStep = 4
-    //     }
-
-
-      
-    //     // deactivate the sliders after first value  done
-    //     // todo
-    //     if(recordBtnClickIdx == 0){
-    //       sliders.disable(0,1,2)
-    //     }
-    //     let tableRow = table.tBodies[0].rows[recordBtnClickIdx++]
-    //     tableRow.cells[1].innerHTML = vInValue
-    //     tableRow.cells[2].innerHTML = resistanceValue
-    //     tableRow.cells[3].innerHTML = dutyRatioValue
-    //     tableRow.cells[4].innerHTML = Number(Formulas.nonIdeal.M(values)).toFixed(2)
-    //     tableRow.cells[5].innerHTML = Number(Formulas.nonIdeal.iIn(values)).toFixed(2)
-    //     tableRow.cells[6].innerHTML = Number(Formulas.nonIdeal.i0(values)).toFixed(2)
-    //     tableRow.cells[7].innerHTML = Number(Formulas.nonIdeal.v0(values)).toFixed(2)
-    //     tableRow.cells[8].innerHTML = Number(Formulas.nonIdeal.p0(values)).toFixed(2)
-
-    //     //!previous values 
-    //     // tableRow.cells[4].innerHTML = Number(Formulas.efficiencyPlot.v0(values)).toFixed(2)
-    //     // tableRow.cells[5].innerHTML = Number(Formulas.efficiencyPlot.M(values)).toFixed(2)
-    //     // tableRow.cells[6].innerHTML = Number(Formulas.efficiencyPlot.iIn(values)).toFixed(2)
-    //     // tableRow.cells[7].innerHTML = Number(Formulas.efficiencyPlot.i0(values)).toFixed(2)
-    //     // tableRow.cells[8].innerHTML = Number(Formulas.efficiencyPlot.pIn(values)).toFixed(2)
-    //     // tableRow.cells[9].innerHTML = Number(Formulas.efficiencyPlot.p0(values)).toFixed(2)
-    //     // tableRow.cells[10].innerHTML = Number(Formulas.efficiencyPlot.eff(values)).toFixed(2)
-
-    //     // let x = tableRow.cells[9].innerHTML
-    //     // let y = tableRow.cells[10].innerHTML
-    //     // // ! addData to graph
-    //     // graph.addData(0,{x:x,y:y})
-
-    //     // if(recordBtnClickIdx>6){
-    //     //   // after complete
-    //     //   Dom.setBlinkArrow(true, 790, 408).play();
-    //     //   setCC("Click 'Next' to go to next step");
-    //     //   setIsProcessRunning(false); 
-    //     //   Scenes.currentStep = 4
-    //     // }
-    //     // warning for sorting the data
-    //     if(recordBtnClickIdx==8){
-    //       setCC("Press Record")
-    //       Dom.setBlinkArrowRed(true,730-leftMinus,60-topMinus,30,30,90).play()
-    //     }
-    //   }      
-      
-      
-    //   return true;
-    // }),
-    // (step6 = function () {
-    //   setIsProcessRunning(true);
- 
-    //   Scenes.setStepHeading(
-    //     "",
-    //     ""
-    //   )
-
-    //   Scenes.changeHeader(3)
-    //   // setCC("Record 7 reading for different Load Resistances (R0)")
-    //     // ! show the slider
-    //   Scenes.items.slider_box.set(-50,-80).scale(0.79)
-    //     Scenes.items.btn_next.show()
-  
-    //     //! Required Items
-    //     Scenes.items.new_part_3_circuit.set(220,-20,190)
-    //     Scenes.items.btn_record.set(640,-78)
-    //   Scenes.items.btn_delete.set(740,-78)
-    //    Scenes.items.btn_reset.set(840,-78)
-    //     let table = Scenes.items.part3_table_three.set(-25,165, null).scale(0.9).item
-    //     let tableColumnMax = table.tBodies[0].rows[0].cells.length
-    //     let tableRowMax = table.tBodies[0].rows.length
-  
-    //     let valuesToMatch = []
-    //     // * index to handle records
-    //     let recordBtnClickIdx = (table.tBodies[0].rows[6].cells[4].innerHTML==""?0:7)
-        
-    //     // ! graph
-    //     let graph_height = 200
-    //     let graph_width = 355
-        
-    //     Scenes.items.graph_box_5.set(null, -28, 210)
-    //     Scenes.items.graph5.set(null,null,graph_height,graph_width)
-    //     let ctx = Scenes.items.graph5.item
-
-    //     Scenes.items.graph_box_6.set(null, 190, 220)
-    //     Scenes.items.graph6.set(null,null,graph_height,graph_width)
-    //     let ctx2 = Scenes.items.graph6.item
-
-    //     // ! Label for graph
-    //     let xLabel = Scenes.items.chart.label5.x
-    //     let yLabel = Scenes.items.chart.label5.y
-    //     let dataLabel = "Data"
-
-    //     let xLabel2 = Scenes.items.chart.label6.x
-    //     let yLabel2 = Scenes.items.chart.label6.y
-    //     let dataLabel2 = "Data2"
-
-    //     // ! Forshowing graph labels
-    //     // graph idx is for  showing which graph is being shown
-    //     let graphIdx = 0
-    //     if(Scenes.items.chart[graphIdx] != null){
-    //       Scenes.items.xLabel.set().setContent(xLabel)
-    //       Scenes.items.yLabel.set().setContent(yLabel)
-
-    //       Scenes.items.xLabel2.set().setContent(xLabel2)
-    //       Scenes.items.yLabel2.set().setContent(yLabel2)
-    //     }
-        
-    //     // ! To Plot graph
-    //     function plotGraph(
-    //       ctx,
-    //       ctx2,
-    //       graphIdx,
-    //       data,
-    //       data2,
-    //       dataLabel,
-    //       dataLabel2,
-    //       xLabel=null,
-    //       yLabel=null,
-    //       xLabel2=null,
-    //       yLabel2=null,
-    //       beginAtZero=false
-    //     ){
-    //       // for label
-    //       Scenes.items.yLabel.set(487,60).setContent(yLabel).styles({
-    //         backgroundColor: "transperant",
-    //         textAlign: "center",
-    //         color: "black",
-    //         width: "170px", 
-    //         rotate: "-90deg",
-    //       })
-    //       Scenes.items.xLabel.set(720,160).setContent(xLabel).styles({
-    //         backgroundColor: "transperant",
-    //         color: "black",
-    //         width: "fit-content", 
-    //       })
-    //       // for label2
-    //       Scenes.items.yLabel2.set(487,60+225).setContent(yLabel2).styles({
-    //         backgroundColor: "transperant",
-    //         textAlign: "center",
-    //         color: "black",
-    //         width: "170px", 
-    //         rotate: "-90deg",
-    //       })
-    //       Scenes.items.xLabel2.set(720,160+225).setContent(xLabel2).styles({
-    //         backgroundColor: "transperant",
-    //         color: "black",
-    //         width: "fit-content", 
-    //       })
-
-    //       // ! Destroy old graph
-    //       let graphRef = Scenes.items.chart[graphIdx]
-    //       let graphRef2 = Scenes.items.chart[graphIdx+1]
-    //       if(graphRef!=null){
-    //         graphRef.destroy()
-    //         graphRef2.destroy()
-    //       }
-          
-    //       graphRef = new Chart(ctx, {
-    //         type: "scatter",
-    //         plugins: [{
-    //           // afterDraw: chart => {
-    //           //   var ctx = chart.chart.ctx;
-    //           //   ctx.save();
-    //           //   ctx.textAlign = 'center';
-    //           //   ctx.font = '18px Arial';
-    //           //   ctx.fillStyle = 'black';
-    //           //   ctx.fillText('Output Power (P )', chart.chart.width / 2, chart.chart.height - 24);
-    //           //   ctx.textAlign = 'left';
-    //           //   ctx.font = '10px Arial';
-    //           //   ctx.fillText('0', chart.chart.width - 119, chart.chart.height - 12);
-    //           //   ctx.restore();
-    //           // },
-              
-    //         }],
-    //         data: {
-    //           datasets: [
-    //               {
-    //                 label: dataLabel,
-    //                 fill: false,
-    //                 borderColor: "red",
-    //                 backgroundColor: "red",
-    //                 data: data,
-    //                 display: false,
-    //               },
-    //           ],
-    //         },
-    //         options: {
-    //           scales: {
-    //             yAxes: [
-    //               {
-    //                 scaleLabel: {
-    //                   display: false,
-    //                   labelString: yLabel,
-    //                   fontColor: 'black',
-    //                   fontSize: 17,
-
-    //                 },
-    //                 ticks: { 
-    //                   beginAtZero:beginAtZero,
-    //                   fontColor: 'black',
-    //                   fontSize: 14,
-    //                 }
-    //               },
-    //             ],
-    //             xAxes: [
-    //               {
-    //                 scaleLabel: {
-    //                   display: false,
-    //                   labelString: xLabel,
-    //                   fontColor: 'black',
-    //                   fontSize: 17,
-    //                 },
-    //                 ticks: { 
-    //                   beginAtZero:beginAtZero,
-    //                   fontColor: 'black',
-    //                   fontSize: 14,
-    //                 }
-    //               },
-    //             ],
-    //           },
-    //         },
-    //       })
-    //       graphRef2 = new Chart(ctx2, {
-    //         type: "scatter",
-    //         plugins: [{
-    //           // afterDraw: chart => {
-    //           //   var ctx = chart.chart.ctx;
-    //           //   ctx.save();
-    //           //   ctx.textAlign = 'center';
-    //           //   ctx.font = '18px Arial';
-    //           //   ctx.fillStyle = 'black';
-    //           //   ctx.fillText('Output Power (P )', chart.chart.width / 2, chart.chart.height - 24);
-    //           //   ctx.textAlign = 'left';
-    //           //   ctx.font = '10px Arial';
-    //           //   ctx.fillText('0', chart.chart.width - 119, chart.chart.height - 12);
-    //           //   ctx.restore();
-    //           // },
-              
-    //         }],
-    //         data: {
-    //           datasets: [
-    //               {
-    //                 label: dataLabel2,
-    //                 fill: false,
-    //                 borderColor: "red",
-    //                 backgroundColor: "red",
-    //                 data: data2,
-    //                 display: false,
-    //               },
-    //           ],
-    //         },
-    //         options: {
-    //           scales: {
-    //             yAxes: [
-    //               {
-    //                 scaleLabel: {
-    //                   display: false,
-    //                   labelString: yLabel2,
-    //                   fontColor: 'black',
-    //                   fontSize: 17,
-
-    //                 },
-    //                 ticks: { 
-    //                   beginAtZero:beginAtZero,
-    //                   fontColor: 'black',
-    //                   fontSize: 14,
-    //                 }
-    //               },
-    //             ],
-    //             xAxes: [
-    //               {
-    //                 scaleLabel: {
-    //                   display: false,
-    //                   labelString: xLabel2,
-    //                   fontColor: 'black',
-    //                   fontSize: 17,
-    //                 },
-    //                 ticks: { 
-    //                   beginAtZero:beginAtZero,
-    //                   fontColor: 'black',
-    //                   fontSize: 14,
-    //                 }
-    //               },
-    //             ],
-    //           },
-    //         },
-    //       })
-        
-    //       Scenes.items.chart[graphIdx] = graphRef
-    //       Scenes.items.chart[graphIdx+1] = graphRef2
-    //     }
-
-    //     // let slidersBox = document.querySelectorAll(".slider")
-    //     // let slidersBox = document.querySelectorAll(".range-slider__range")
-    //     let topMinus = 85
-    //     let leftMinus = 50
-    //     function stepTutorial2(){
-
-    //       Dom.setBlinkArrowRed(true,100-leftMinus,78-topMinus,30,30,90).play()
-    //       setCC("Select V<sub>in</sub>")
-          
-    //       sliders.selectOp1.oninput = ()=>{
-    //         Dom.setBlinkArrowRed(true,240-leftMinus,78-topMinus,30,30,90).play()
-    //         setCC("Select D")
-    //       }
-    //       sliders.selectOp2.oninput = ()=>{
-    //         Dom.setBlinkArrowRed(true,380-leftMinus,78-topMinus,30,30,90).play()
-    //         setCC("Select Turns ratio")
-    //         }
-    //           sliders.selectOp3.oninput = ()=>{
-    //             Dom.setBlinkArrowRed(true,130-leftMinus,125-topMinus,30,30,90).play()
-    //             setCC("Select R")
-    //           }
-    //             sliders.slider.onclick = ()=>{
-    //               Dom.setBlinkArrowRed(true,730-leftMinus,60-topMinus,30,30,90).play()
-    //               setCC("Press Record")                
-    //             }
-    //     }
-    //     if(recordBtnClickIdx == 0){
-    //       stepTutorial2()
-    //     }
-    //     // generate option
-    //     sliders.generateOptionsFor(2)
-  
-        
-    //     function setDataToGraph(){
-  
-    //       let characteristicsValue = Scenes.items.slider_C.item.value;
-  
-         
-    //       let graphData = []
-    //       let graphData2 = []
-    //       var rows = table.tBodies[0].rows
-    //       let n = rows.length
-    //       ,xLabel = "Output Power P<sub>0</sub>"
-    //       ,yLabel = "Losses (W)"
-    //       ,xLabel2 = "Output Power P<sub>0</sub>"
-    //       ,yLabel2 = "Efficiency (%)",
-    //       tableP0Idx = 8,
-    //       tableEfficiency = 11,
-    //       tableLosses = 10
-    //       for(let i=0;i<n;i++){
-    //         let x = rows[i].cells[tableP0Idx].innerHTML
-    //         let y = rows[i].cells[tableLosses].innerHTML
-
-    //         let x2 = rows[i].cells[tableP0Idx].innerHTML
-    //         let y2 = rows[i].cells[tableEfficiency].innerHTML
-
-    //         graphData.push({x: x,y: y})
-    //         graphData2.push({x: x2,y: y2})
-    //       }
-
-    //         // setting labels
-    //       let conclusionFront = ""
-
-    //       conclusionFront = "Losses increase with loading effect and hence efficiency decreases."
-
-    //       setCC("Losses increase with loading effect and hence efficiency decreases.")
-
-
-    //       // if(p0vsLosses){
-    //       //   yLabel = "Losses (W)"
-    //       //   conclusionFront = "Losses increase with loading effect."
-    //       //   setCC("The conclusion of these observation is that the losses increase with loading effect.")
-    //       // }else{
-    //       //   yLabel = "Efficiencty (%)"
-    //       //   conclusionFront = "Loading effect the efficiency decreases."
-    //       //   setCC("The conclusion of these observation is that due to loading effect the efficiency decreases.")
-    //       // }
-
-    //       // ! For front conclusion
-    //       // Anime.fade(
-    //       //   Scenes.items.tempTitle1.set().setContent(conclusionFront).addClass("conclusion").item
-    //       // )
-          
-    //       Scenes.items.tempTitle1.addClass("conclusion").set(null,60).setContent(conclusionFront)
-    //       Scenes.items.chart.label5.x = xLabel
-    //       Scenes.items.chart.label5.y = yLabel
-
-    //       Scenes.items.chart.label6.x = xLabel2
-    //       Scenes.items.chart.label6.y = yLabel2
-
-    //       plotGraph(ctx,ctx2,graphIdx,graphData,graphData2,dataLabel,dataLabel2,xLabel,yLabel,xLabel2,yLabel2,false)
-    //       Scenes.items.graph5.set(null,null,graph_height,graph_width)
-    //       Scenes.items.graph6.set(null,null,graph_height,graph_width)
-    //     }
-
-    //         // ! ------------> If data already present plot the graph
-    //     if(table.tBodies[0].rows[6].cells[2].innerHTML !== ""){
-    //       setIsProcessRunning(false)
-    //       Scenes.currentStep = 4
-  
-    //       // ! change the table column index who's changing
-    //       let changeableColumnIndx = 3
-  
-    //       recordBtnClickIdx = 8
-    //       let rows = table.tBodies[0].rows
-        
-    //       // * to get old values from table for matching
-    //       for(let i=0;i<tableColumnMax;i++){
-    //         let val = rows[i].cells[changeableColumnIndx].innerHTML
-    //         valuesToMatch.push(Number(val))
-    //       }
-    //     }else{
-    //       // ! Please note this when plot the graph then show the graph ... 
-    //       plotGraph(ctx,ctx2,graphIdx,[{}],[{}],dataLabel,dataLabel2,xLabel,yLabel,xLabel2,yLabel2,true) 
-    //       Scenes.items.graph5.set(null,null,graph_height,graph_width)
-    //       Scenes.items.graph6.set(null,null,graph_height,graph_width)
-    //       // disableSlider("reset")
-    //     }
-  
-    //     // // ! adding data set
-    //     // graph.addDataset(
-    //     //   "Efficiency",
-    //     //   "red",
-    //     //   []
-    //     // )
-         
-  
-    //      //!onclick for delete btn
-    //      Scenes.items.btn_delete.item.onclick =  function(){
-    //       if(recordBtnClickIdx == 0 || recordBtnClickIdx > tableRowMax){
-    //         return
-    //       }
-    //       let row = table.tBodies[0].rows
-          
-    //       for(let i=1;i<tableColumnMax;i++){
-    //         row[recordBtnClickIdx-1].cells[i].innerHTML = "" ;
-    //       }
-    //       recordBtnClickIdx = recordBtnClickIdx-1
-    //       if(recordBtnClickIdx==0){
-    //         sliders.enableAll()
-    //       }
-    //       valuesToMatch.pop()
-    //     }
-  
-    //     //! onclick for reset 
-    //     Scenes.items.btn_reset.item.onclick = function(){
-    //       var rows = table.tBodies[0].rows
-    
-    //       for(let i=0;i<tableRowMax;i++){
-    //         for(let j=1;j<tableColumnMax;j++){
-    //           rows[i].cells[j].innerHTML = "";
-    //         }
-    //       }
-  
-    //       for(let i=0;i<tableRowMax;i++){
-    //         rows[i].cells[0].innerHTML = i+1;
-    //       }
-  
-    //       // reset all the parameters
-    //       // so just simply call this step again
-    //       Scenes.steps[7]()        
-          
-    //     }
-  
-    //     // ! onclick for record
-    //     Scenes.items.btn_record.item.onclick = function(){ 
-  
-    //       // taking values from all sliders 
-    //       // ! note dutyratio slider is now Resistance Slider and resistance is duty
-    //       let vInValue = Number(sliders.selectOp1.value)
-    //       let dutyRatioValue = Number(sliders.selectOp2.value)
-    //       let resistanceValue = Number(sliders.slider.value)
-  
-    //       // * if all values not selected
-    //       if(vInValue=="" || dutyRatioValue=="" || resistanceValue==""){
-    //         setCC("Select all values first.")
-    //         return
-    //       }
-  
-    //       updateValues(vInValue,dutyRatioValue,resistanceValue)
-    //       console.log(vInValue,dutyRatioValue,resistanceValue)
-
-          
-    //       // ! for arrow system
-    //       if(recordBtnClickIdx < tableRowMax-1){
-    //         setCC("Select R")
-    //         Dom.setBlinkArrowRed(true,130-leftMinus,125-topMinus,30,30,90).play()
-    //       }
-    //       else{
-    //         Dom.setBlinkArrowRed(-1)
-    //       }
-  
-    //       // ! Can't select same values
-    //       if(recordBtnClickIdx < 8 && valuesToMatch.indexOf(resistanceValue)!=-1){
-    //         setCC("Please select different value.")
-    //         return
-    //       }else{
-    //         valuesToMatch.push(resistanceValue)
-    //       }
-  
-    //       // ! sort the data
-    //       if(recordBtnClickIdx>=8){
-  
-    //         function sortTable(){
-    //           var rows = table.tBodies[0].rows
-    //           let sortAccording = 3
-  
-    //           let n=8
-    //           for(let i=0;i<n;i++){
-    //               for(let j=0;j<n-i-1;j++){
-    //                   let val1 = Number(rows[j].cells[sortAccording].innerHTML)
-    //                   let val2 = Number(rows[j+1].cells[sortAccording].innerHTML)
-    //                   if(val1 > val2){
-    //                       let temp = rows[j].innerHTML
-    //                       rows[j].innerHTML = rows[j+1].innerHTML
-    //                       rows[j+1].innerHTML = temp
-    //                   }
-    //               }
-    //           }
-    //           for(let i=0;i<n;i++){
-    //               rows[i].cells[0].innerHTML = i+1
-    //           }
-    //         }
-    //         sortTable()
-  
-    //         // * plot the graph
-    //         // adding parameter to x,y graph
-    //         // var rows = table.tBodies[0].rows
-    //         // let n = 7
-    //         // for(let i=0;i<n;i++){
-    //         //   graph.addData(0,
-    //         //     {
-    //         //       x: rows[i].cells[9].innerHTML,
-    //         //       y: rows[i].cells[10].innerHTML
-    //         //     }
-    //         //   )
-    //         // }
-    //         setDataToGraph()
-    //         Scenes.items.graph2.set(null,null,220,355)
-
-  
-    //         // after complete
-    //         Dom.setBlinkArrow(true, 790, 408).play()
-    //         setCC("Click 'Next' to go to next step")
-    //         setIsProcessRunning(false)
-    //         Scenes.currentStep = 4
-    //       }
-  
-  
-          
-  
-    //       // deactivate the sliders after first value  done
-    //       // todo
-    //       if(recordBtnClickIdx == 0){
-    //         sliders.disable(0,1,2)
-    //       }
-
-    //       let tableRow = table.tBodies[0].rows[recordBtnClickIdx++]
-    //       tableRow.cells[1].innerHTML = vInValue
-    //       tableRow.cells[2].innerHTML = dutyRatioValue
-    //       tableRow.cells[3].innerHTML = resistanceValue
-    //       tableRow.cells[4].innerHTML = Number(Formulas.efficiencyPlot.M(values)).toFixed(2)
-    //       tableRow.cells[5].innerHTML = Number(Formulas.efficiencyPlot.iIn(values)).toFixed(2)
-    //       tableRow.cells[6].innerHTML = Number(Formulas.efficiencyPlot.i0(values)).toFixed(2)
-    //       tableRow.cells[7].innerHTML = Number(Formulas.efficiencyPlot.v0(values)).toFixed(2)
-    //       tableRow.cells[8].innerHTML = Number(Formulas.efficiencyPlot.p0(values)).toFixed(2)
-    //       tableRow.cells[9].innerHTML = Number(Formulas.efficiencyPlot.pIn(values)).toFixed(2)
-    //       tableRow.cells[10].innerHTML = Number(Formulas.efficiencyPlot.losses(values)).toFixed(2)
-    //       tableRow.cells[11].innerHTML = Number(Formulas.efficiencyPlot.eff(values)).toFixed(2)
-  
-    //       // let x = tableRow.cells[9].innerHTML
-    //       // let y = tableRow.cells[10].innerHTML
-    //       // // ! addData to graph
-    //       // graph.addData(0,{x:x,y:y})
-  
-    //       // if(recordBtnClickIdx>6){
-    //       //   // after complete
-    //       //   Dom.setBlinkArrow(true, 790, 408).play();
-    //       //   setCC("Click 'Next' to go to next step");
-    //       //   setIsProcessRunning(false); 
-    //       //   Scenes.currentStep = 4
-    //       // }
-    //       // warning for sorting the data
-    //       if(recordBtnClickIdx==8){
-    //         setCC("Press Record")
-    //       Dom.setBlinkArrowRed(true,730-leftMinus,60-topMinus,30,30,90).play()
-    //       }
-    //     }    
-         
-        
-  
-        
-      
-    //   return true
-    // }),
-  
+    //! HW Result Start - Menu
+    (step6 = function () {
+      setIsProcessRunning(true);
+      // to hide previous step
+      Dom.hideAll();
+      Scenes.items.slider_box.hide()
+
+      Scenes.items.btn_next.show()
+      Scenes.changeHeader(6, -285, 28)
+
+      //! Required positions
+      Scenes.items.hw_result_menu.set(0,-48, 500, 950)
+      let mask = Scenes.items.mask;
+
+      // Start
+      Dom.maskClick(mask, ()=>{
+        setIsProcessRunning(false)
+        Scenes.next()
+      }, 728, 79, 39, 157)
+      setCC("Click on the Load Voltage")
+      Dom.setBlinkArrowOnElement(mask, "left").play()
+      // Dom.setBlinkArrowRed(true,100,100)
+
+      return true
+    }),
+
+    // ! Result 1 1
+    (step7 = function () {
+      setIsProcessRunning(true);
+      // to hide previous step
+      Dom.hideAll();
+      Scenes.items.slider_box.hide()
+
+      Scenes.items.btn_next.show()
+      Scenes.changeHeader(6, -285, 28)
+
+      //! Required positions
+      Scenes.items.hw_result_1_1
+        .set(0,-48, 500, 950)
+      let mask = Scenes.items.mask;
+
+      // Start
+      // Dom.maskClick(mask, ()=>{
+      //   setIsProcessRunning(false)
+      //   Scenes.next()
+      // }, 728, 79, 39, 157)
+      // Dom.setBlinkArrowOnElement(mask, "left").play()
+
+      setCC("The DC supply voltage of 48 volts is given to 1-phase inverter.")
+      setCC("Here channel one is gives the experimental waveforms of input supply voltage of ")
+      setCC("48 volts while the channel two shows the ac load voltage.").onend = ()=>{
+        setCC("Click 'Next' to go to next step");
+        Dom.setBlinkArrow(true, 790, 410).play();
+        setIsProcessRunning(false);
+      }
+
+
+      return true
+    }),
+
+    // ! Result 1 2
+    (step8 = function () {
+      setIsProcessRunning(true);
+      // to hide previous step
+      Dom.hideAll();
+      Scenes.items.slider_box.hide()
+
+      Scenes.items.btn_next.show()
+      Scenes.changeHeader(6, -285, 28)
+
+      //! Required positions
+      Scenes.items.hw_result_1_2
+        .set(0,-48, 500, 950)
+      let mask = Scenes.items.mask;
+
+      // Start
+      // Dom.maskClick(mask, ()=>{
+      //   setIsProcessRunning(false)
+      //   Scenes.next()
+      // }, 728, 79, 39, 157)
+      // Dom.setBlinkArrowOnElement(mask, "left").play()
+
+      setCC("Here the  PWM gate signals waveforms for switches are shown. ").onend = ()=>{
+        setTimeout(() => {
+          setCC("Experiment Completed");
+        }, 5000);
+      }
+
+
+      return true
+    }),
  
   ],
+  // ! For adding realcurrentstep in every step
+  // ! For tracking the current step accuratly
+  realCurrentStep: null,
+  setRealCurrentStep(){
+    let count = 0
+    this.steps.forEach((step,idx) => {
+      const constCount = count
+      let newStep = () => {
+        this.realCurrentStep = constCount;
+        console.log(`RealCurrentStep: ${this.realCurrentStep}`)
+        return step();
+      };
+
+      count++;
+      this.steps[idx] = newStep
+    });
+  },
   back() {
     //! animation isRunning
     // if (isRunning) {
@@ -4582,14 +3576,28 @@ part1_box1 : new Dom(".part1_box1"),
     }
   },
   next() {
+    let ignore = true
+    const ignoreDrawerProgress = ()=>{
+      let stepsToIgnore = [4,5,6]
+      console.log(this.realCurrentStep)
+      ignore = stepsToIgnore.indexOf(this.realCurrentStep) != -1
+      return 
+    }
+    if(!this.realCurrentStep){
+      Scenes.setRealCurrentStep()
+    }
     //! animation isRunning
     if (isRunning) {
       return
     }
     if (this.currentStep < this.steps.length) {
+      ignoreDrawerProgress()
+
       if (this.steps[this.currentStep]()) {
-        nextDrawerItem();
-        nextProgressBar();
+        if(!ignore){
+          nextDrawerItem();
+          nextProgressBar();
+        }
         this.currentStep++;
       }         
     } else {

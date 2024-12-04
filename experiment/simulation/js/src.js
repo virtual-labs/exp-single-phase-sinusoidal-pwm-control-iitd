@@ -219,7 +219,13 @@ part_2_graph_data_upper : this.allImgsDom[168],
     part_2_select_option_1:this.allImgsDom[185],
     part_2_select_option_2:this.allImgsDom[186],
     part_2_select_option_3:this.allImgsDom[187],
+    btn_hint:this.allImgsDom[188],
+    hint_box:this.allImgsDom[189],
 
+    hw_result_1_1:this.allImgsDom[190],
+    hw_result_1_2:this.allImgsDom[191],
+    hw_result_menu:this.allImgsDom[192],
+    mask:this.allImgsDom[193],
 
       // * Question Mark
       domQs1: this.allQsDom[0],
