@@ -2,7 +2,7 @@
   "version": 2.0,
   "questions": [
     {
-      "question": "Answer the questions given below (refer Fig.1):<br> <center> <img src='images/pre1.png' height='300px'><br><br>Fig. 1. Circuit diagram of single-phase bridge inverter.</center><br><br> 1. ‘A<sub>r</sub>’ is reference signal amplitude and ‘A<sub>c</sub>’ is carrier signal amplitude, then modulation index (MI) is",
+      "question": "Answer the questions given below (refer Fig.1):<br> <center> <img src='images/pre1.png' height='300px'><br><br>Fig. 1. Circuit diagram of single-phase bridge inverter.</center><br><br> 1. What is the definition of modulation index (MI) where ‘A<sub>r</sub>’ is reference signal amplitude and ‘A<sub>c</sub>’ is carrier signal amplitude, then modulation index (MI) is",
       "answers": {        
         "a": "A<sub>r</sub>/A<sub>c</sub>",
         "b": "A<sub>c</sub>/A<sub>r</sub>",
