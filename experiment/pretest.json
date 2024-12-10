@@ -10,10 +10,10 @@
         "d": "(1-A<sub>r</sub>)/A<sub>c</sub>"
       },
       "explanations": {
-        "a": "Explanation 1  <a href='www.google.com'>here</a>",
-        "b": "Explanation 2",
-        "c": "Explanation 2",
-        "d": "Explanation 2"
+        "a": "Explanation 1",
+        "b": "Explanation 2: By definition, the modulation index (MI) is defined as the ratio of the amplitude of the carrier signal (A<sub>c</sub>) to the amplitude of reference signal (A<sub>r</sub>).",
+        "c": "Explanation 3",
+        "d": "Explanation 4"
       },
       "correctAnswer": "b",
       "difficulty": "beginner"
@@ -28,10 +28,10 @@
         "d": "V<sub>in</sub>/2"
       },
       "explanations": {
-        "a": "Explanation 1  <a href='www.google.com'>here</a>",
+        "a": "Explanation 1: When S<sub>1</sub> and S<sub>3</sub> are turned ON simultaneously, the load terminals are shorted and hence the output voltage is zero.",
         "b": "Explanation 2",
-        "c": "Explanation 2",
-        "d": "Explanation 2"
+        "c": "Explanation 3",
+        "d": "Explanation 4"
       },
       "correctAnswer": "a",
       "difficulty": "beginner"
@@ -46,10 +46,10 @@
         "d": "AC -to- DC"
       },
       "explanations": {
-        "a": "Explanation 1  <a href='www.google.com'>here</a>",
-        "b": "Explanation 2",
-        "c": "Explanation 2",
-        "d": "Explanation 2"
+        "a": "Explanation 1",
+        "b": "Explanation 2: Inverter converts DC input supply into AC.",
+        "c": "Explanation 3",
+        "d": "Explanation 4"
       },
       "correctAnswer": "b",
       "difficulty": "beginner"
@@ -64,10 +64,10 @@
         "d": "neither voltage nor current depends"
       },
       "explanations": {
-        "a": "Explanation 1  <a href='www.google.com'>here</a>",
+        "a": "Explanation 1",
         "b": "Explanation 2",
-        "c": "Explanation 2",
-        "d": "Explanation 2"
+        "c": "Explanation 3: In a Voltage Source Inverter (VSI), the inverter is designed to maintain a constant output voltage, irrespective of the load impedance.",
+        "d": "Explanation 4"
       },
       "correctAnswer": "c",
       "difficulty": "beginner"
@@ -83,10 +83,10 @@
         "d": "<img src='images/pre5.png' height='70px'>"
       },
       "explanations": {
-        "a": "Explanation 1  <a href='www.google.com'>here</a>",
+        "a": "Explanation 1: By definition, the total harmonic distortion (THD) is the ratio of the root mean square (RMS) value of the harmonic components of a waveform to the RMS value of its fundamental component.",
         "b": "Explanation 2",
-        "c": "Explanation 2",
-        "d": "Explanation 2"
+        "c": "Explanation 3",
+        "d": "Explanation 4"
       },
       "correctAnswer": "a",
       "difficulty": "beginner"
