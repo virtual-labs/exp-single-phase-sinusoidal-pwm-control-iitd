@@ -266,7 +266,7 @@ Assume each pulse is located at the discrete value of ϕ<sub>i</sub>, which repr
 
 <br>
 <div style="float: left; width:50%;">
-  <img src="images/thup10.png" height="65px">
+  <img src="images/thup10.png" height="56px">
 </div>
 <div style="float: right; width:50%; text-align:center;">
     ..(10)
@@ -278,7 +278,7 @@ The approximated width of the i<sub>th</sub> pulse,<img src="images/thup11.png" 
 </div>
 
 <div style="float: left; width:50%;">
-  <img src="images/thup12.png" height="65px">
+  <img src="images/thup12.png" height="40px">
       </div>
 <div style="float: right; width:50%; text-align:center;">
     ..(11)
@@ -326,7 +326,7 @@ The expression for the reference signal is given by
 </div>
 
 <div style="float: left; width:50%;">
-  <img src="images/thup16.png" height="65px">
+  <img src="images/thup16.png" height="36px">
       </div>
 <div style="float: right; width:50%; text-align:center;">
     ..(15)
